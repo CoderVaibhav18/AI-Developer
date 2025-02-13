@@ -1,5 +1,5 @@
-import dotenv from "dotenv";
-dotenv.config();
+import "dotenv/config";
+
 import app from "./app.js";
 import http from 'http';
 const PORT = process.env.PORT || 8899;
