@@ -1,9 +1,9 @@
-import express from "express";
+import express from "express"
 import morgan from "morgan";
-import dbConnect from "./db/db.js";
-const app = express()
+import dbConnection from "./db/db.js"
+const app = express();
 
-dbConnect();
+dbConnection();
 
 app.use(morgan('dev'))
 app.use(express.json())
@@ -13,4 +13,4 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
-export default app;
+export default app
