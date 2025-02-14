@@ -26,27 +26,31 @@ const loginController = async (req, res) => {
 
   try {
     const { email, password } = req.body;
-    
+
     const user = await userModel.findOne({ email }).select("+password");
-  
+
     if (!user) {
       return res.status(404).json({ message: "Invalid credentials" });
     }
-    const isMatch = await user.comparePass(password)
+    const isMatch = await user.comparePass(password);
     console.log(isMatch);
-    
+
     if (!isMatch) {
       return res.status(404).json({ message: "Invalid credentials" });
     }
 
     const token = await user.generateJWT();
 
-    res.cookie("token", token)
+    res.cookie("token", token);
     return res.status(200).json({ user, token });
-
   } catch (error) {
     res.status(401).json({ error: error.message });
   }
 };
 
-export { userRegister, loginController };
+const getUser = (req, res) => {
+  console.log(req.user);
+  res.status(200).json({ user: req.user });
+};
+
+export { userRegister, loginController, getUser };
