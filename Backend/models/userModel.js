@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.static.hashPass = async function (password) {
+userSchema.statics.hashPass = async function (password) {
   return await bcrypt.hash(password, 10);
 };
 
@@ -27,9 +27,9 @@ userSchema.methods.comparePass = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-userSchema.method.generateJWT = function () {
+userSchema.methods.generateJWT = function () {
   return jwt.sign({ email: this.email }, process.env.JWT_SECRET);
 };
 
-const user = new mongoose.model("user", userSchema);
-export default user;
+const userModel = new mongoose.model("user", userSchema);
+export default userModel;
