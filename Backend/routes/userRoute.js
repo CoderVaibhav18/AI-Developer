@@ -2,6 +2,7 @@ import express from "express";
 import {
   getUser,
   loginController,
+  userLogout,
   userRegister,
 } from "../controllers/userController.js";
 import { body } from "express-validator";
@@ -26,5 +27,7 @@ routes.post(
 );
 
 routes.get("/profile", authUser, getUser);
+
+routes.post('/logout', authUser, userLogout)
 
 export default routes;
