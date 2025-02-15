@@ -7,7 +7,7 @@ const authUser = (req, res, next) => {
     if (!token) {
       res.status(401).send({ error: "unauthorized user" });
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);    
 
     req.user = decoded;
     next();

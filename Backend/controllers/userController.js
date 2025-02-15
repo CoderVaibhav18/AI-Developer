@@ -1,5 +1,5 @@
 import userModel from "../models/userModel.js";
-import { userCreate } from "../services/userService.js";
+import { userCreate, userLoginServices } from "../services/userService.js";
 import { validationResult } from "express-validator";
 
 const userRegister = async (req, res) => {
@@ -27,7 +27,7 @@ const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await userModel.findOne({ email }).select("+password");
+    const user = await userLoginServices(req.body);
 
     if (!user) {
       return res.status(404).json({ message: "Invalid credentials" });

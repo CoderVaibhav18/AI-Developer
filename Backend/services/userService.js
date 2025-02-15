@@ -6,7 +6,7 @@ const userCreate = async ({ email, password }) => {
   }
 
   const hashedPassword = await userModel.hashPass(password);
-  
+
   const user = await userModel.create({
     email,
     password: hashedPassword,
@@ -14,4 +14,14 @@ const userCreate = async ({ email, password }) => {
 
   return user;
 };
-export { userCreate };
+
+const userLoginServices = async ({ email, password }) => {
+  if (!email || !password) {
+    throw new Error("Email & password are required");
+  }
+
+  const user = await userModel.findOne({ email }).select("+password");
+  return user;
+};
+
+export { userCreate, userLoginServices };
