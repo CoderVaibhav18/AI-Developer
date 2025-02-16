@@ -17,6 +17,7 @@ routes.post(
     .withMessage("Password must be 6 character long"),
   userRegister
 );
+
 routes.post(
   "/login",
   body("email").isEmail().withMessage("Email must be valid email address"),

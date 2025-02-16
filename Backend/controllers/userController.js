@@ -34,7 +34,6 @@ const loginController = async (req, res) => {
       return res.status(404).json({ message: "Invalid credentials" });
     }
     const isMatch = await user.comparePass(password);
-    console.log(isMatch);
 
     if (!isMatch) {
       return res.status(404).json({ message: "Invalid credentials" });
