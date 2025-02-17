@@ -6,6 +6,9 @@ const Login = () => {
   const [hidePass, setHidePass] = useState("password");
   const [eyeChange, setEyeChange] = useState(true); // Fixed initial state
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const handleShowPass = () => {
     if (eyeChange) {
       setEyeChange(false);
@@ -16,11 +19,21 @@ const Login = () => {
     }
   };
 
+  const submitHandler = (e) => {
+    e.preventDefault();
+    let userData = {
+      email: email,
+      password: password,
+    };
+
+    console.log(userData);
+  };
+
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-900">
-      <div className="bg-gray-800 w-full max-w-md p-8 rounded-lg">
-        <h2 className="font-bold text-2xl text-white mb-4">Login</h2>
-        <form>
+    <div className="h-screen px-5 flex items-center justify-center bg-gray-900">
+      <div className="bg-gray-800 w-full max-w-md p-8  rounded-lg">
+        <h2 className="font-bold text-2xl text-white mb-4">Login User</h2>
+        <form onSubmit={(e) => submitHandler(e)}>
           <div className="mb-3">
             <label className="block text-gray-400 mb-2" htmlFor="email">
               Email
@@ -28,6 +41,7 @@ const Login = () => {
             <input
               type="email"
               id="email"
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-gray-700 p-3 outline-none rounded-lg text-white border-none"
               placeholder="Email"
             />
@@ -41,12 +55,15 @@ const Login = () => {
               className="text-xl absolute right-5 top-10 cursor-pointer"
             >
               <i
-                className={`${eyeChange ? "ri-eye-off-line" : "ri-eye-line"}`}
+                className={`${
+                  eyeChange ? "ri-eye-off-line" : "ri-eye-line"
+                } text-amber-50`}
               ></i>
             </h2>
             <input
               type={hidePass}
               id="password"
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-gray-700 p-3 outline-none rounded-lg text-white border-none"
               placeholder="Password"
             />
@@ -60,7 +77,9 @@ const Login = () => {
         </form>
         <p className="text-center text-gray-400 mt-3">
           Don&apos;t have account?{" "}
-          <Link className="text-blue-500 hover:underline">Register</Link>
+          <Link to="/register" className="text-blue-500 hover:underline">
+            Register
+          </Link>
         </p>
       </div>
     </div>
