@@ -29,6 +29,6 @@ routes.post(
 
 routes.get("/profile", authUser, getUser);
 
-routes.post('/logout', authUser, userLogout)
+routes.get('/logout', authUser, userLogout)
 
 export default routes;
