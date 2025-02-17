@@ -21,7 +21,7 @@ const authUser = async (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).send({ error: error.message });
+    res.status(401).json({ error: error.message });
   }
 };
 export { authUser };
