@@ -36,7 +36,9 @@ const Register = () => {
     if (response.status === 201) {
       const data = response.data;
       console.log(data.user);
+      localStorage.setItem("token", data.token);
       alert("user created");
+      navigate("/login");
     }
     setEmail("");
     setPassword("");

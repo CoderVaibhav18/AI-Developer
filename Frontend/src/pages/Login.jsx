@@ -1,8 +1,10 @@
 // import React from "react";
+import axios from "axios";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [hidePass, setHidePass] = useState("password");
   const [eyeChange, setEyeChange] = useState(true); // Fixed initial state
 
@@ -19,18 +21,29 @@ const Login = () => {
     }
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    let userData = {
-      email: email,
-      password: password,
+    const userData = {
+      email,
+      password,
     };
 
-    console.log(userData);
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/user/login`,
+      userData
+    );
+    if (response.status === 200) {
+      const data = response.data;
+      console.log(data.user);
+      localStorage.setItem("token", data.token);
+      navigate("/");
+    }
+    setEmail("");
+    setPassword("");
   };
 
   return (
-    <div className="h-screen px-5 flex items-center justify-center bg-gray-900">
+    <div className="h-screen flex items-center px-5 justify-center bg-gray-900">
       <div className="bg-gray-800 w-full max-w-md p-8  rounded-lg">
         <h2 className="font-bold text-2xl text-white mb-4">Login User</h2>
         <form onSubmit={(e) => submitHandler(e)}>
