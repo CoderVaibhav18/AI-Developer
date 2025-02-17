@@ -1,8 +1,10 @@
 // import React from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [hidePass, setHidePass] = useState("password");
   const [eyeChange, setEyeChange] = useState(true); // Fixed initial state
 
@@ -19,14 +21,25 @@ const Register = () => {
     }
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    let userData = {
-      email: email,
-      password: password,
+    const userData = {
+      email,
+      password,
     };
 
-    console.log(userData);
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/user/register`,
+      userData
+    );
+
+    if (response.status === 201) {
+      const data = response.data;
+      console.log(data.user);
+      alert("user created");
+    }
+    setEmail("");
+    setPassword("");
   };
 
   return (
@@ -55,7 +68,9 @@ const Register = () => {
               className="text-xl absolute right-5 top-10 cursor-pointer"
             >
               <i
-                className={`${eyeChange ? "ri-eye-off-line" : "ri-eye-line"} text-amber-50`}
+                className={`${
+                  eyeChange ? "ri-eye-off-line" : "ri-eye-line"
+                } text-amber-50`}
               ></i>
             </h2>
             <input
