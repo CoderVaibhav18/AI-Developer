@@ -20,7 +20,7 @@ const UserProtected = ({ children }) => {
       .then((response) => {
         if (response.status === 200) {
           const data = response.data;
-          // console.log(data.user);
+          console.log(data.user);
           setIsLoading(false);
         }
       })
@@ -32,7 +32,9 @@ const UserProtected = ({ children }) => {
   }, [token, navigate]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="w-10 h-10 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin"></div>
+    );
   }
 
   return <>{children}</>;
