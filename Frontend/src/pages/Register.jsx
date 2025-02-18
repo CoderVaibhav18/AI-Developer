@@ -1,7 +1,8 @@
 // import React from "react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { userContextData } from "../context/UserContext";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ const Register = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const { setUser } = useContext(userContextData);
 
   const handleShowPass = () => {
     if (eyeChange) {
@@ -36,6 +39,7 @@ const Register = () => {
     if (response.status === 201) {
       const data = response.data;
       localStorage.setItem("token", data.token);
+      setUser(data.user);
       alert("user created");
       navigate("/");
     }

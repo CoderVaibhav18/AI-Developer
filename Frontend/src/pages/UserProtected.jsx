@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { userContextData } from "../context/UserContext";
+import PropTypes from "prop-types";
 
 const UserProtected = ({ children }) => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const { setUser } = useContext(userContextData);
 
   useEffect(() => {
     if (!token) {
@@ -20,7 +23,7 @@ const UserProtected = ({ children }) => {
       .then((response) => {
         if (response.status === 200) {
           const data = response.data;
-          console.log(data.user);
+          setUser(data.user);
           setIsLoading(false);
         }
       })
@@ -29,7 +32,7 @@ const UserProtected = ({ children }) => {
         localStorage.removeItem("token");
         navigate("/login");
       });
-  }, [token, navigate]);
+  }, [token, navigate, setUser]);
 
   if (isLoading) {
     return (
@@ -38,6 +41,10 @@ const UserProtected = ({ children }) => {
   }
 
   return <>{children}</>;
+};
+
+UserProtected.propTypes = {
+  children: PropTypes.node.isRequired, // Ensures 'children' is a valid React node and required
 };
 
 export default UserProtected;

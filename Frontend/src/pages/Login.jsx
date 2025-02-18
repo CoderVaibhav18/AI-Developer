@@ -1,7 +1,8 @@
 // import React from "react";
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { userContextData } from "../context/UserContext";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const { setUser } = useContext(userContextData);
 
   const handleShowPass = () => {
     if (eyeChange) {
@@ -34,6 +37,7 @@ const Login = () => {
         .then((response) => {
           if (response.status === 200) {
             const data = response.data;
+            setUser(data.user);
             localStorage.setItem("token", data.token);
             navigate("/");
             alert("User loging Successfully: " + data.user.email);
