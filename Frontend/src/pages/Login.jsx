@@ -36,6 +36,9 @@ const Login = () => {
       const data = response.data;
       localStorage.setItem("token", data.token);
       navigate("/");
+      alert("Loging Successfully");
+    } else {
+      alert("Invalid Email or Password");
     }
     setEmail("");
     setPassword("");
