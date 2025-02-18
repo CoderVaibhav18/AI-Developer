@@ -28,17 +28,22 @@ const Login = () => {
       password,
     };
 
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/user/login`,
-      userData
-    );
-    if (response.status === 200) {
-      const data = response.data;
-      localStorage.setItem("token", data.token);
-      navigate("/");
-      alert("Loging Successfully");
-    } else {
-      alert("Invalid Email or Password");
+    try {
+      axios
+        .post(`${import.meta.env.VITE_API_URL}/user/login`, userData)
+        .then((response) => {
+          if (response.status === 200) {
+            const data = response.data;
+            localStorage.setItem("token", data.token);
+            navigate("/");
+            alert("User loging Successfully: " + data.user.email);
+          }
+          setEmail("");
+          setPassword("");
+        });
+    } catch (error) {
+      console.log(error.message);
+      alert("Invalid email & password");
     }
     setEmail("");
     setPassword("");

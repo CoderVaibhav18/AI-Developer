@@ -12,7 +12,6 @@ const UserProtected = ({ children }) => {
       navigate("/login");
       return;
     }
-    console.log(token);
 
     axios
       .get(`${import.meta.env.VITE_API_URL}/user/profile`, {
@@ -21,7 +20,7 @@ const UserProtected = ({ children }) => {
       .then((response) => {
         if (response.status === 200) {
           const data = response.data;
-          console.log(data.user);
+          // console.log(data.user);
           setIsLoading(false);
         }
       })
