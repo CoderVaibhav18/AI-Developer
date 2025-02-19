@@ -1,7 +1,7 @@
 // import React from "react";
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../config/axiosInstance";
 import { userContextData } from "../context/UserContext";
 
 const Register = () => {
@@ -31,10 +31,7 @@ const Register = () => {
       password,
     };
 
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/user/register`,
-      userData
-    );
+    const response = await axios.post(`/user/register`, userData);
 
     if (response.status === 201) {
       const data = response.data;

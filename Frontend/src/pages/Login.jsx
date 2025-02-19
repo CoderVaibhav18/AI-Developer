@@ -1,5 +1,5 @@
 // import React from "react";
-import axios from "axios";
+import axios from "../config/axiosInstance";
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { userContextData } from "../context/UserContext";
@@ -32,19 +32,17 @@ const Login = () => {
     };
 
     try {
-      axios
-        .post(`${import.meta.env.VITE_API_URL}/user/login`, userData)
-        .then((response) => {
-          if (response.status === 200) {
-            const data = response.data;
-            setUser(data.user);
-            localStorage.setItem("token", data.token);
-            navigate("/");
-            alert("User loging Successfully: " + data.user.email);
-          }
-          setEmail("");
-          setPassword("");
-        });
+      axios.post(`/user/login`, userData).then((response) => {
+        if (response.status === 200) {
+          const data = response.data;
+          setUser(data.user);
+          localStorage.setItem("token", data.token);
+          navigate("/");
+          alert("User loging Successfully: " + data.user.email);
+        }
+        setEmail("");
+        setPassword("");
+      });
     } catch (error) {
       console.log(error.message);
       alert("Invalid email & password");
@@ -99,7 +97,7 @@ const Login = () => {
             Login {/* Fixed button text */}
           </button>
         </form>
-        <p className="text-center text-gray-400 mt-3">
+        <p className="text-left text-gray-400 mt-1">
           Don&apos;t have account?{" "}
           <Link to="/register" className="text-blue-500 hover:underline">
             Register

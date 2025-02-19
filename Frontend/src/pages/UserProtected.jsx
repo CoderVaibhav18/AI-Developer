@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../config/axiosInstance";
 import { userContextData } from "../context/UserContext";
 import PropTypes from "prop-types";
 
@@ -17,7 +17,7 @@ const UserProtected = ({ children }) => {
     }
 
     axios
-      .get(`${import.meta.env.VITE_API_URL}/user/profile`, {
+      .get(`/user/profile`, {
         headers: { authorization: `Bearer ${token}` },
       })
       .then((response) => {
