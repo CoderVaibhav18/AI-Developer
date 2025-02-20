@@ -9,7 +9,12 @@ const createProjectService = async ({ name, userId }) => {
     throw new Error("User ID is required");
   }
 
-  const project = await projectModel.create({ name: name, users: [userId] });
+  let project;
+  try {
+    project = await projectModel.create({ name: name, users: [userId] });
+  } catch (error) {
+    throw new Error("Failed to create project");
+  }
 
   return project;
 };
