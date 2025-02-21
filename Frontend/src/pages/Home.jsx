@@ -1,12 +1,32 @@
 import { useState } from "react";
+import axios from "../config/axiosInstance";
 
 const Home = () => {
   const [projectCreatePanel, setProjectCreatePanel] = useState(false);
   const [projectName, setProjectName] = useState("");
 
+  const token = localStorage.getItem("token");
+
   const submitHandler = (e) => {
     e.preventDefault();
-    console.log(projectName);
+
+    let createProjects = {
+      name: projectName,
+    };
+
+    axios
+      .post("/project/create", createProjects, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        if (response.status === 201) {
+          const data = response.data;
+          console.log(data.newProject);
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   };
 
   return (

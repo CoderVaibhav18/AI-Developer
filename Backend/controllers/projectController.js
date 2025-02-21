@@ -15,11 +15,11 @@ const createProject = async (req, res) => {
     const userId = loggedInUser._id;
 
     const newProject = await createProjectService({ name, userId });
-    return res.status(200).json({ newProject });
+    return res.status(201).json({ newProject });
 
   } catch (error) {
     console.log(error.message);
-    return res.status(400).json({ msg: error.message });
+    return res.status(401).json({ msg: error.message });
   }
 };
 
