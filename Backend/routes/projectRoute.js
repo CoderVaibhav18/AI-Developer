@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { authUser } from "../middlewares/authUser.js";
-import { createProject } from "../controllers/projectController.js";
+import { createProject, getAllUserPeoject } from "../controllers/projectController.js";
 
 const router = Router();
 
@@ -11,5 +11,6 @@ router.post(
   authUser,
   createProject
 );
+router.get("/allprojects", authUser, getAllUserPeoject);
 
-export default router
+export default router;

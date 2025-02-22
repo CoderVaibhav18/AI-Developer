@@ -1,6 +1,9 @@
 import { validationResult } from "express-validator";
 import userModel from "../models/userModel.js";
-import { createProjectService } from "../services/projectsService.js";
+import {
+  allUserProjects,
+  createProjectService,
+} from "../services/projectsService.js";
 
 const createProject = async (req, res) => {
   const errors = validationResult(req);
@@ -16,11 +19,18 @@ const createProject = async (req, res) => {
 
     const newProject = await createProjectService({ name, userId });
     return res.status(201).json({ newProject });
-
   } catch (error) {
     console.log(error.message);
     return res.status(401).json({ msg: error.message });
   }
 };
 
-export { createProject };
+const getAllUserPeoject = async (req, res) => {
+  const loggedInUser = await userModel.findOne({ email: req.user.email });
+  const userId = loggedInUser._id;
+
+  const allProjects = await allUserProjects({ userId });
+  return res.status(200).json({ allproject: allProjects });
+};
+
+export { createProject, getAllUserPeoject };

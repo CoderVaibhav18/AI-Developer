@@ -27,7 +27,9 @@ const Home = () => {
       .catch((err) => {
         console.log(err.message);
       });
+
     setProjectName("");
+    setProjectCreatePanel(false);
   };
 
   return (
