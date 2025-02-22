@@ -26,11 +26,17 @@ const createProject = async (req, res) => {
 };
 
 const getAllUserPeoject = async (req, res) => {
-  const loggedInUser = await userModel.findOne({ email: req.user.email });
-  const userId = loggedInUser._id;
+  try {
+    const loggedInUser = await userModel.findOne({ email: req.user.email });
+    const userId = loggedInUser._id;
 
-  const allProjects = await allUserProjects({ userId });
-  return res.status(200).json({ allproject: allProjects });
+    const allProjects = await allUserProjects({ userId });
+    return res.status(200).json({ allProjects });
+    
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ msg: error.message });
+  }
 };
 
 export { createProject, getAllUserPeoject };
