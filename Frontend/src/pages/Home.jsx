@@ -21,12 +21,13 @@ const Home = () => {
       .then((response) => {
         if (response.status === 201) {
           const data = response.data;
-          console.log(data.newProject);
+          alert("project created : " + data.newProject.name);
         }
       })
       .catch((err) => {
         console.log(err.message);
       });
+    setProjectName("");
   };
 
   return (
@@ -67,11 +68,12 @@ const Home = () => {
                 </label>
                 <input
                   type="text"
+                  value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-lg
-                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                    px-4 py-2.5 text-gray-900 placeholder-gray-400
-                    transition-all outline-none"
+                  className="w-full  bg-gray-200 rounded-lg
+                    focus:ring-2 focus:ring-blue-400 
+                    px-3 py-2 text-gray-900 placeholder-gray-400
+                    transition-all outline-none text-md"
                   placeholder="Enter project name"
                 />
               </div>
