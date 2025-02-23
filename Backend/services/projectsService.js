@@ -1,5 +1,4 @@
 import projectModel from "../models/projectModel.js";
-import userModel from "../models/userModel.js";
 
 const createProjectService = async ({ name, userId }) => {
   if (!name) {
@@ -20,13 +19,14 @@ const createProjectService = async ({ name, userId }) => {
   return project;
 };
 
-const allUserProjects = async ({ userId }) => {
+const getAllUsersProjects = async ({ userId }) => {
+
   if (!userId) {
     throw new Error("User ID is required");
   }
 
-  const getAllprojects = await projectModel.findOne({ users: userId });
-  return getAllprojects;
+  const allprojects = await projectModel.find({ users: userId });
+  return allprojects;
 };
 
-export { createProjectService, allUserProjects };
+export { createProjectService, getAllUsersProjects };
