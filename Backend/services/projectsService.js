@@ -44,11 +44,11 @@ const addUsersToProjectService = async ({ projectId, users, userId }) => {
 
   if (
     !Array.isArray(users) ||
-    users.some((userId) => !mongoose.Types.ObjectId.isValid(users))
+    users.some((userId) => !mongoose.Types.ObjectId.isValid(userId))
   ) {
     throw new Error("Invalid userId(s) in users array");
   }
-  
+
   if (!userId) {
     throw new Error("project id is required");
   }
