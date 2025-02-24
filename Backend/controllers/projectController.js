@@ -1,6 +1,10 @@
 import { validationResult } from "express-validator";
 import userModel from "../models/userModel.js";
-import { createProjectService, getAllProjectsServices } from "../services/projectsService.js";
+import {
+  addUsersToProjectService,
+  createProjectService,
+  getAllProjectsServices,
+} from "../services/projectsService.js";
 
 const createProject = async (req, res) => {
   const errors = validationResult(req);
@@ -23,9 +27,7 @@ const createProject = async (req, res) => {
 };
 
 const getAllProjects = async (req, res) => {
-
   try {
-
     const email = req.user.email;
     const loggedInUser = await userModel.findOne({ email });
 
@@ -34,12 +36,35 @@ const getAllProjects = async (req, res) => {
     const allProjects = await getAllProjectsServices({ userId });
 
     return res.status(200).json({ projects: allProjects });
-
   } catch (err) {
     console.log(err.message);
     res.status(400).json({ msg: err.message });
   }
-
 };
 
-export { createProject, getAllProjects };
+const addUsersToProject = async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { projectId, users } = req.body;
+
+    const loggedInUser = await userModel.findOne({ email: req.user.email });
+
+    const addUsersInProjects = await addUsersToProjectService({
+      projectId,
+      users,
+      userId: loggedInUser._id,
+    });
+
+    return res.status(200).json({ addedUser: addUsersInProjects });
+  } catch (err) {
+    console.log(err.message);
+    res.status(400).json({ msg: err.message });
+  }
+};
+
+export { createProject, getAllProjects, addUsersToProject };

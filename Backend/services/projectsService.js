@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import projectModel from "../models/projectModel.js";
 
 const createProjectService = async ({ name, userId }) => {
@@ -26,7 +27,64 @@ const getAllProjectsServices = async ({ userId }) => {
 
   const allProjects = await projectModel.find({ users: userId });
   return allProjects;
-  
 };
 
-export { createProjectService, getAllProjectsServices };
+const addUsersToProjectService = async ({ projectId, users, userId }) => {
+  if (!projectId) {
+    throw new Error("project id is required");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(projectId)) {
+    throw new Error("Invalid project id");
+  }
+
+  if (!users) {
+    throw new Error("project id is required");
+  }
+
+  if (
+    !Array.isArray(users) ||
+    users.some((userId) => !mongoose.Types.ObjectId.isValid(users))
+  ) {
+    throw new Error("Invalid userId(s) in users array");
+  }
+  
+  if (!userId) {
+    throw new Error("project id is required");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error("Invalid user id");
+  }
+
+  const projects = await projectModel.findOne({
+    _id: projectId,
+    users: userId,
+  });
+
+  if (!projects) {
+    throw new Error("Project not found");
+  }
+
+  const updateProjects = await projectModel.findOneAndUpdate(
+    {
+      _id: projectId,
+    },
+    {
+      $addToSet: {
+        $users: {
+          $each: users,
+        },
+      },
+    },
+    { new: true }
+  );
+
+  return updateProjects;
+};
+
+export {
+  createProjectService,
+  getAllProjectsServices,
+  addUsersToProjectService,
+};
