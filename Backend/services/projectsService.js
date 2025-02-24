@@ -19,14 +19,14 @@ const createProjectService = async ({ name, userId }) => {
   return project;
 };
 
-const getAllUsersProjects = async ({ userId }) => {
-
+const getAllProjectsServices = async ({ userId }) => {
   if (!userId) {
     throw new Error("User ID is required");
   }
 
-  const allprojects = await projectModel.find({ users: userId });
-  return allprojects;
+  const allProjects = await projectModel.find({ users: userId });
+  return allProjects;
+  
 };
 
-export { createProjectService, getAllUsersProjects };
+export { createProjectService, getAllProjectsServices };
