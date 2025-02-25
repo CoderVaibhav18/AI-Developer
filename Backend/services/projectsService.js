@@ -29,4 +29,58 @@ const getAllProjectsServices = async ({ userId }) => {
   return allProjects;
 };
 
-export { createProjectService, getAllProjectsServices };
+const adddUsersService = async ({ projectId, users, userId }) => {
+  if (!projectId) {
+    throw new Error("Project ID is required");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(projectId)) {
+    throw new Error("Invalid Project ID");
+  }
+
+  if (
+    !Array.isArray(users) ||
+    users.some(
+      (userId) => typeof userId === !mongoose.Types.ObjectId.isValid(userId)
+    )
+  ) {
+    throw new Error("Invalid users");
+  }
+
+  if (!userId) {
+    throw new Error("User ID is required");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error("Invalid User ID");
+  }
+
+  const projects = await projectModel.findOne({
+    _id: projectId,
+    users: userId,
+  });
+
+  if (!projects) {
+    throw new Error("Project not found");
+  }
+
+  const addUserInproject = await projectModel.findOneAndUpdate(
+    {
+      _id: projectId,
+    },
+    {
+      $addToSet: {
+        users: {
+          $each: users,
+        },
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  return addUserInproject;
+};
+
+export { createProjectService, getAllProjectsServices, adddUsersService };
