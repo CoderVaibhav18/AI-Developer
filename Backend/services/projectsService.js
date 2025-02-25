@@ -29,30 +29,32 @@ const getAllProjectsServices = async ({ userId }) => {
   return allProjects;
 };
 
-const adddUsersService = async ({ projectId, users, userId }) => {
+const addUsersToProjectService = async ({ projectId, users, userId }) => {
   if (!projectId) {
-    throw new Error("Project ID is required");
+    throw new Error("project id is required");
   }
 
   if (!mongoose.Types.ObjectId.isValid(projectId)) {
-    throw new Error("Invalid Project ID");
+    throw new Error("Invalid project id");
+  }
+
+  if (!users) {
+    throw new Error("project id is required");
   }
 
   if (
     !Array.isArray(users) ||
-    users.some(
-      (userId) => typeof userId === !mongoose.Types.ObjectId.isValid(userId)
-    )
+    users.some((userId) => !mongoose.Types.ObjectId.isValid(userId))
   ) {
-    throw new Error("Invalid users");
+    throw new Error("Invalid userId(s) in users array");
   }
 
   if (!userId) {
-    throw new Error("User ID is required");
+    throw new Error("project id is required");
   }
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
-    throw new Error("Invalid User ID");
+    throw new Error("Invalid user id");
   }
 
   const projects = await projectModel.findOne({
@@ -64,23 +66,25 @@ const adddUsersService = async ({ projectId, users, userId }) => {
     throw new Error("Project not found");
   }
 
-  const addUserInproject = await projectModel.findOneAndUpdate(
+  const updateProjects = await projectModel.findOneAndUpdate(
     {
       _id: projectId,
     },
     {
       $addToSet: {
-        users: {
+        $users: {
           $each: users,
         },
       },
     },
-    {
-      new: true,
-    }
+    { new: true }
   );
 
-  return addUserInproject;
+  return updateProjects;
 };
 
-export { createProjectService, getAllProjectsServices, adddUsersService };
+export {
+  createProjectService,
+  getAllProjectsServices,
+  addUsersToProjectService,
+};
