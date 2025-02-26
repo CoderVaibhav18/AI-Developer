@@ -5,6 +5,7 @@ import {
   createProject,
   getAllProjects,
   addUsersToProject,
+  getProjectbyId,
 } from "../controllers/projectController.js";
 
 const router = Router();
@@ -30,5 +31,7 @@ router.put(
     authUser,
     addUsersToProject
 );
+
+router.get('/getprojects/:projectId', authUser, getProjectbyId)
 
 export default router;

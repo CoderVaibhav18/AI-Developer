@@ -24,4 +24,13 @@ const userLoginServices = async ({ email, password }) => {
   return user;
 };
 
-export { userCreate, userLoginServices };
+const allUserServices = async ({ userId }) => {
+  const allUser = await userModel.find({
+    _id: {
+      $ne: userId,
+    },
+  });
+  return allUser;
+};
+
+export { userCreate, userLoginServices, allUserServices };

@@ -4,6 +4,7 @@ import {
   addUsersService,
   createProjectService,
   getAllProjectsServices,
+  getProjectInfo,
 } from "../services/projectsService.js";
 
 const createProject = async (req, res) => {
@@ -67,4 +68,16 @@ const addUsersToProject = async (req, res) => {
   }
 };
 
-export { createProject, getAllProjects, addUsersToProject };
+const getProjectbyId = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    const projects = await getProjectInfo({ projectId });
+    return res.status(200).json({ projects });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(400).json({ err: err.message });
+  }
+};
+
+export { createProject, getAllProjects, addUsersToProject, getProjectbyId };

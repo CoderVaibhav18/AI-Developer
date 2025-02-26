@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  allUesrsController,
   getUser,
   loginController,
   userLogout,
@@ -30,5 +31,7 @@ routes.post(
 routes.get("/profile", authUser, getUser);
 
 routes.get('/logout', authUser, userLogout)
+
+routes.get('/allusers', authUser, allUesrsController)
 
 export default routes;

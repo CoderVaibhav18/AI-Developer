@@ -1,5 +1,9 @@
 import userModel from "../models/userModel.js";
-import { userCreate, userLoginServices } from "../services/userService.js";
+import {
+  allUserServices,
+  userCreate,
+  userLoginServices,
+} from "../services/userService.js";
 import { validationResult } from "express-validator";
 import redisClient from "../services/redisService.js";
 
@@ -49,13 +53,11 @@ const loginController = async (req, res) => {
 };
 
 const getUser = (req, res) => {
-  
   res.status(200).json({ user: req.user });
 };
 
 const userLogout = (req, res) => {
   try {
-    
     const token = req.cookies?.token || req.headers.Authorization.split(" ")[1];
 
     redisClient.set(token, "logout", "EX", 60 * 60 * 24);
@@ -69,4 +71,25 @@ const userLogout = (req, res) => {
   }
 };
 
-export { userRegister, loginController, getUser, userLogout };
+const allUesrsController = async (req, res) => {
+  try {
+    const loggedInUser = await userModel.findOne({
+      email: req.user.email,
+    });
+
+    const allUsers = await allUserServices({ userId: loggedInUser._id });
+
+    return res.status(200).json({ allUsers });
+  } catch (err) {
+    console.log(err.message);
+    res.status(400).json({ message: "Error fetching all users" });
+  }
+};
+
+export {
+  userRegister,
+  loginController,
+  getUser,
+  userLogout,
+  allUesrsController,
+};
