@@ -1,7 +1,7 @@
 import { validationResult } from "express-validator";
 import userModel from "../models/userModel.js";
 import {
-  addUsersToProjectService,
+  addUsersService,
   createProjectService,
   getAllProjectsServices,
 } from "../services/projectsService.js";
@@ -54,16 +54,16 @@ const addUsersToProject = async (req, res) => {
 
     const loggedInUser = await userModel.findOne({ email: req.user.email });
 
-    const addUsersInProjects = await addUsersToProjectService({
+    const projects = await addUsersService({
       projectId,
       users,
       userId: loggedInUser._id,
     });
 
-    return res.status(200).json({ addedUser: addUsersInProjects });
+    return res.status(200).json({ projects });
   } catch (err) {
     console.log(err.message);
-    res.status(400).json({ msg: err.message });
+    return res.status(400).json({ err: err.message });
   }
 };
 

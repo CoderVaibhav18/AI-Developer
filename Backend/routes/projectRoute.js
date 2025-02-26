@@ -20,15 +20,15 @@ router.get("/allprojects", authUser, getAllProjects);
 
 router.put(
   "/addusers",
-  body("projectId").isString().withMessage("projects id must be a string"),
+  body("projectId").isString().withMessage("project id is must be an string"),
   body("users")
     .isArray({ min: 1 })
-    .withMessage("users must be an array of string")
+    .withMessage("Users must be an arrayy")
     .bail()
     .custom((users) => users.every((user) => typeof user === "string"))
-    .withMessage("each user must be a string"),
-  authUser,
-  addUsersToProject
+    .withMessage("Every user must be an string"),
+    authUser,
+    addUsersToProject
 );
 
 export default router;
