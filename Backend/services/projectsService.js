@@ -72,7 +72,7 @@ const addUsersService = async ({ projectId, users, userId }) => {
     },
     {
       $addToSet: {
-        $users: {
+        users: {
           $each: users,
         },
       },
