@@ -27,7 +27,7 @@ const userLoginServices = async ({ email, password }) => {
 const allUserServices = async ({ userId }) => {
   const allUser = await userModel.find({
     _id: {
-      $ne: userId,
+      $ne: userId
     },
   });
   return allUser;
