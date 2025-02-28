@@ -1,9 +1,12 @@
 import { useState } from "react";
 import axios from "../config/axiosInstance";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const [projectCreatePanel, setProjectCreatePanel] = useState(false);
   const [projectName, setProjectName] = useState("");
+  const [projects, setProjects] = useState([]);
 
   const token = localStorage.getItem("token");
 
@@ -32,6 +35,23 @@ const Home = () => {
     setProjectCreatePanel(false);
   };
 
+  useEffect(() => {
+    axios
+      .get("/project/allprojects", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          console.log(res.data.projects);
+
+          setProjects(res.data.projects);
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }, [token]);
+
   return (
     <main className="min-h-screen w-full max-w-7xl mx-auto p-4 overflow-hidden">
       <div className="p-4">
@@ -46,6 +66,24 @@ const Home = () => {
             <i className="text-xl ri-add-line align-middle"></i> New Project
           </h4>
         </button>
+
+        {
+          /* Project Create Panel */
+          projects && projects.length > 0 ? (
+            <div className="bg-red-400 w-full mt-5 p-3 flex gap-1 rounded-lg">
+              {projects.map((project) => (
+                <Link
+                  className="border border-amber-300 px-5 py-2 rounded-sm "
+                  key={project._id}
+                >
+                  {project.name} <i className="ri-link-m"></i>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div>No projects found</div>
+          )
+        }
       </div>
 
       {projectCreatePanel && (
