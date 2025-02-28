@@ -52,6 +52,24 @@ const Home = () => {
       });
   }, [token]);
 
+  const [deletingId, setDeletingId] = useState(null);
+
+  // Add this function in your component
+  const handleDelete = async (projectId) => {
+    if (!window.confirm("Are you sure you want to delete this project?"))
+      return;
+
+    try {
+      setDeletingId(projectId);
+      setProjects((prev) => prev.filter((p) => p._id !== projectId));
+    } catch (error) {
+      console.error("Delete failed:", error);
+      alert("Failed to delete project");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <main className="min-h-screen w-full max-w-7xl mx-auto p-4 overflow-hidden">
       <div className="p-4">
@@ -70,18 +88,46 @@ const Home = () => {
         {
           /* Project Create Panel */
           projects && projects.length > 0 ? (
-            <div className="bg-red-400 w-full mt-5 p-3 flex gap-1 rounded-lg">
+            <div className="bg-red-50 w-full mt-5 p-4 flex gap-3 rounded-lg shadow-sm border border-red-100">
               {projects.map((project) => (
                 <Link
-                  className="border border-amber-300 px-5 py-2 rounded-sm "
+                  className="relative border border-red-200 px-4 py-2.5 rounded-md
+                 hover:border-red-300 hover:bg-red-100 transition-all
+                 group bg-white text-red-900 hover:text-red-950"
                   key={project._id}
                 >
-                  {project.name} <i className="ri-link-m"></i>
+                  <span className="flex items-center gap-2">
+                    {project.name}
+                    <i className="ri-link-m text-red-400 group-hover:text-red-500"></i>
+                  </span>
+
+                  {/* Delete button */}
+                  <button
+                    className="absolute -top-3 -right-3 h-7 w-7 flex items-center 
+             justify-center bg-red-500 text-white rounded-full
+             hover:bg-red-600 transition-colors shadow-sm
+             disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={() => handleDelete(project._id)}
+                    disabled={deletingId === project._id}
+                    aria-label={`Delete project ${project.name}`}
+                  >
+                    {deletingId === project._id ? (
+                      <i className="ri-loader-4-line animate-spin text-xs"></i>
+                    ) : (
+                      <i className="text-xs ri-delete-bin-7-fill"></i>
+                    )}
+                  </button>
                 </Link>
               ))}
             </div>
           ) : (
-            <div>No projects found</div>
+            <div className="flex flex-col items-center justify-center p-4 space-y-3 text-center">
+              <i className="ri-folders-line text-4xl text-red-300"></i>
+              <p className="text-red-500 font-medium">No projects found</p>
+              <p className="text-red-400 text-sm max-w-xs mx-auto">
+                Create your first project to get started
+              </p>
+            </div>
           )
         }
       </div>
