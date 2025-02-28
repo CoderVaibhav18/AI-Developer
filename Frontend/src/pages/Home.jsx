@@ -61,6 +61,7 @@ const Home = () => {
 
     try {
       setDeletingId(projectId);
+
       setProjects((prev) => prev.filter((p) => p._id !== projectId));
     } catch (error) {
       console.error("Delete failed:", error);
