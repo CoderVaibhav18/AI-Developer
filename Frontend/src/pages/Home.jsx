@@ -7,24 +7,25 @@ const Home = () => {
   const [projectCreatePanel, setProjectCreatePanel] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [projects, setProjects] = useState([]);
+  const [deletingId, setDeletingId] = useState(null);
+  const [projectCreated, setProjectCreated] = useState(0); // New state to trigger refresh
 
   const token = localStorage.getItem("token");
 
   const submitHandler = (e) => {
     e.preventDefault();
-
-    let createProjects = {
-      name: projectName,
-    };
-
     axios
-      .post("/project/create", createProjects, {
+      .post("/project/create", { name: projectName }, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
         if (response.status === 201) {
           const data = response.data;
           alert("project created : " + data.newProject.name);
+          // Update projects list immediately
+          setProjects(prev => [...prev, data.newProject]);
+          // Trigger refresh counter
+          setProjectCreated(prev => prev + 1);
         }
       })
       .catch((err) => {
@@ -48,14 +49,10 @@ const Home = () => {
       .catch((err) => {
         console.log(err.message);
       });
-  }, [token]);
+  }, [token, projectCreated]); // Added projectCreated as dependency
 
-  const [deletingId, setDeletingId] = useState(null);
-
-  // Add this function in your component
   const handleDelete = async (projectId) => {
-    if (!window.confirm("Are you sure you want to delete this project?"))
-      return;
+    if (!window.confirm("Are you sure you want to delete this project?")) return;
 
     try {
       setDeletingId(projectId);
@@ -65,11 +62,11 @@ const Home = () => {
         })
         .then((res) => {
           alert("deleted " + res.data.msg);
+          setProjects(prev => prev.filter(p => p._id !== projectId));
         })
         .catch((err) => {
           console.log(err.message);
         });
-      setProjects((prev) => prev.filter((p) => p._id !== projectId));
     } catch (error) {
       console.error("Delete failed:", error);
       alert("Failed to delete project");
