@@ -82,7 +82,7 @@ const getProjectbyId = async (req, res) => {
 };
 
 const deleteProject = async (req, res) => {
-  const { projectId } = req.body;
+  const { projectId } = req.params;
 
   try {
 

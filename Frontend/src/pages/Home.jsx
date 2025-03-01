@@ -42,8 +42,6 @@ const Home = () => {
       })
       .then((res) => {
         if (res.status === 200) {
-          console.log(res.data.projects);
-
           setProjects(res.data.projects);
         }
       })
@@ -61,7 +59,16 @@ const Home = () => {
 
     try {
       setDeletingId(projectId);
-
+      await axios
+        .delete(`/project/deleteproject/${projectId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          alert("deleted " + res.data.msg);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
       setProjects((prev) => prev.filter((p) => p._id !== projectId));
     } catch (error) {
       console.error("Delete failed:", error);

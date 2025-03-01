@@ -36,8 +36,7 @@ router.put(
 router.get("/getprojects/:projectId", authUser, getProjectbyId);
 
 router.delete(
-  "/deleteproject",
-  body("projectId").isString().withMessage("Project id must be string"),
+  "/deleteproject/:projectId",
   authUser,
   deleteProject
 );
