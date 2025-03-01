@@ -1,7 +1,8 @@
 // import React from "react";
 // import { useLocation } from "react-router-dom";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "../config/axiosInstance";
 
 const Project = () => {
   // const location = useLocation();
@@ -10,22 +11,26 @@ const Project = () => {
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [selectUserId, setSelectUserId] = useState([]);
 
-  const users = [
-    { id: 1, name: "John Doe", email: "john.doe@example" },
-    { id: 2, name: "Jane Doe", email: "jane.doe" },
-    { id: 3, name: "Jane Doe", email: "jane.doe" },
-    { id: 4, name: "Jane Doe", email: "jane.doe" },
-    { id: 5, name: "Jane Doe", email: "jane.doe" },
-    { id: 6, name: "Jane Doe", email: "jane.doe" },
-    { id: 7, name: "Jane Doe", email: "jane.doe" },
-    { id: 8, name: "Jane Doe", email: "jane.doe" },
-    { id: 9, name: "Jane Doe", email: "jane.doe" },
-    { id: 10, name: "Jane Doe", email: "jane.doe" },
-  ];
+  const [users, setUsers] = useState([]);
 
   const handleUserClick = (id) => {
     setSelectUserId([...selectUserId, id]);
   };
+
+  useEffect(() => {
+    axios
+      .get("/user/allusers", {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        setUsers(res.data.allUsers);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }, []);
 
   return (
     <main className="h-screen w-screen flex">
@@ -121,10 +126,10 @@ const Project = () => {
               {/* Scrollable container */}
               {users.map((user) => (
                 <div
-                  key={user.id}
-                  onClick={() => handleUserClick(user.id)}
+                  key={user._id}
+                  onClick={() => handleUserClick(user._id)}
                   className={`group relative transition-colors ${
-                    selectUserId.indexOf(user.id) != -1
+                    selectUserId.indexOf(user._id) != -1
                       ? "bg-slate-200"
                       : "hover:bg-slate-50"
                   }`}
@@ -133,7 +138,7 @@ const Project = () => {
                     {/* Avatar */}
                     <div
                       className={`flex-shrink-0 ${
-                        selectUserId.includes(user.id)
+                        selectUserId.includes(user._id)
                           ? "bg-slate-700 ring-2 ring-slate-600"
                           : "bg-slate-600 group-hover:bg-slate-700"
                       } w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center 
@@ -145,17 +150,12 @@ const Project = () => {
                     {/* User Info */}
                     <div className="min-w-0">
                       <h3 className="text-sm md:text-base font-semibold text-gray-900 truncate">
-                        {user.name}
+                        {user.email}
                       </h3>
-                      {user.email && (
-                        <p className="text-xs md:text-sm text-gray-500 truncate">
-                          {user.email}
-                        </p>
-                      )}
                     </div>
 
                     {/* Selection Indicator */}
-                    {selectUserId.includes(user.id) && (
+                    {selectUserId.includes(user._id) && (
                       <div className="ml-auto pl-3">
                         <i className="ri-checkbox-circle-fill text-blue-600 text-xl" />
                       </div>
