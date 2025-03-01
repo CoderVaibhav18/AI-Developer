@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "../config/axiosInstance";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [projectCreatePanel, setProjectCreatePanel] = useState(false);
@@ -10,22 +10,28 @@ const Home = () => {
   const [deletingId, setDeletingId] = useState(null);
   const [projectCreated, setProjectCreated] = useState(0); // New state to trigger refresh
 
+  const navigate = useNavigate();
+
   const token = localStorage.getItem("token");
 
   const submitHandler = (e) => {
     e.preventDefault();
     axios
-      .post("/project/create", { name: projectName }, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .post(
+        "/project/create",
+        { name: projectName },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
       .then((response) => {
         if (response.status === 201) {
           const data = response.data;
           alert("project created : " + data.newProject.name);
           // Update projects list immediately
-          setProjects(prev => [...prev, data.newProject]);
+          setProjects((prev) => [...prev, data.newProject]);
           // Trigger refresh counter
-          setProjectCreated(prev => prev + 1);
+          setProjectCreated((prev) => prev + 1);
         }
       })
       .catch((err) => {
@@ -52,7 +58,8 @@ const Home = () => {
   }, [token, projectCreated]); // Added projectCreated as dependency
 
   const handleDelete = async (projectId) => {
-    if (!window.confirm("Are you sure you want to delete this project?")) return;
+    if (!window.confirm("Are you sure you want to delete this project?"))
+      return;
 
     try {
       setDeletingId(projectId);
@@ -62,7 +69,7 @@ const Home = () => {
         })
         .then((res) => {
           alert("deleted " + res.data.msg);
-          setProjects(prev => prev.filter(p => p._id !== projectId));
+          setProjects((prev) => prev.filter((p) => p._id !== projectId));
         })
         .catch((err) => {
           console.log(err.message);
@@ -95,19 +102,30 @@ const Home = () => {
           projects && projects.length > 0 ? (
             <div className="bg-red-50 w-full mt-5 p-4 flex gap-3 rounded-lg shadow-sm border border-red-100">
               {projects.map((project) => (
-                <Link
+                <button
                   className="relative border border-red-200 px-4 py-2.5 rounded-md
                  hover:border-red-300 hover:bg-red-100 transition-all
                  group bg-white text-red-900 hover:text-red-950"
                   key={project._id}
+                  onClick={() =>
+                    navigate("/project", {
+                      state: { project },
+                    })
+                  }
                 >
                   <span className="flex items-center gap-2">
                     {project.name}
-                    <i className="ri-link-m text-red-400 group-hover:text-red-500"></i>
+                    <div>
+                      <small>
+                        <i className="ri-user-3-fill text-red-400 group-hover:text-red-500"></i>
+                      </small>
+                      <small>{project.users.length}</small>
+                    </div>
                   </span>
 
                   {/* Delete button */}
-                  <button
+
+                  <Link
                     className="absolute -top-3 -right-3 h-7 w-7 flex items-center 
              justify-center bg-red-500 text-white rounded-full
              hover:bg-red-600 transition-colors shadow-sm
@@ -121,8 +139,8 @@ const Home = () => {
                     ) : (
                       <i className="text-xs ri-delete-bin-7-fill"></i>
                     )}
-                  </button>
-                </Link>
+                  </Link>
+                </button>
               ))}
             </div>
           ) : (
