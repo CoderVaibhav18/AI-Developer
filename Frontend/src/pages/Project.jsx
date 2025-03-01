@@ -5,14 +5,40 @@ import { useState } from "react";
 
 const Project = () => {
   // const location = useLocation();
-
+  const [isModalPanel, setIsModalPanel] = useState(false);
   // console.log(location.state);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+  const [selectUserId, setSelectUserId] = useState([]);
+
+  const users = [
+    { id: 1, name: "John Doe", email: "john.doe@example" },
+    { id: 2, name: "Jane Doe", email: "jane.doe" },
+    { id: 3, name: "Jane Doe", email: "jane.doe" },
+    { id: 4, name: "Jane Doe", email: "jane.doe" },
+    { id: 5, name: "Jane Doe", email: "jane.doe" },
+    { id: 6, name: "Jane Doe", email: "jane.doe" },
+    { id: 7, name: "Jane Doe", email: "jane.doe" },
+    { id: 8, name: "Jane Doe", email: "jane.doe" },
+    { id: 9, name: "Jane Doe", email: "jane.doe" },
+    { id: 10, name: "Jane Doe", email: "jane.doe" },
+  ];
+
+  const handleUserClick = (id) => {
+    setSelectUserId([...selectUserId, id]);
+  };
 
   return (
     <main className="h-screen w-screen flex">
       <section className="relative left h-full flex flex-col min-w-96 bg-slate-300">
-        <header className="w-full flex justify-end p-2 px-4 bg-slate-100">
+        <header className="w-full flex justify-between items-center p-2 px-4 max-h-96 overflow-auto bg-slate-100">
+          <button
+            onClick={() => setIsModalPanel(true)}
+            className="cursor-pointer flex gap-1"
+          >
+            <i className="ri-add-fill mr-1 font-semibold"></i>
+            <p>Add collaborator</p>
+          </button>
+
           <button
             onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
             className="p-2 cursor-pointer"
@@ -74,6 +100,79 @@ const Project = () => {
           </div>
         </div>
       </section>
+
+      {isModalPanel && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white p-4 md:p-6 flex flex-col rounded-lg w-full max-w-md shadow-xl">
+            <div className="flex justify-between mb-3 items-center">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                Select users
+              </h2>
+              <button
+                onClick={() => setIsModalPanel(false)}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <i className="ri-close-line text-2xl " />
+              </button>
+            </div>
+
+            <div className="max-h-[60vh] overflow-y-auto">
+              {" "}
+              {/* Scrollable container */}
+              {users.map((user) => (
+                <div
+                  key={user.id}
+                  onClick={() => handleUserClick(user.id)}
+                  className={`group relative transition-colors ${
+                    selectUserId.indexOf(user.id) != -1
+                      ? "bg-slate-200"
+                      : "hover:bg-slate-50"
+                  }`}
+                >
+                  <div className="flex items-center p-2 md:p-3 gap-3 cursor-pointer">
+                    {/* Avatar */}
+                    <div
+                      className={`flex-shrink-0 ${
+                        selectUserId.includes(user.id)
+                          ? "bg-slate-700 ring-2 ring-slate-600"
+                          : "bg-slate-600 group-hover:bg-slate-700"
+                      } w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center 
+         transition-all`}
+                    >
+                      <i className="ri-user-fill text-white text-lg md:text-xl" />
+                    </div>
+
+                    {/* User Info */}
+                    <div className="min-w-0">
+                      <h3 className="text-sm md:text-base font-semibold text-gray-900 truncate">
+                        {user.name}
+                      </h3>
+                      {user.email && (
+                        <p className="text-xs md:text-sm text-gray-500 truncate">
+                          {user.email}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Selection Indicator */}
+                    {selectUserId.includes(user.id) && (
+                      <div className="ml-auto pl-3">
+                        <i className="ri-checkbox-circle-fill text-blue-600 text-xl" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              // onClick={addCollaborators}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+            >
+              Add Collaborators
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 };
