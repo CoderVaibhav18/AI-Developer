@@ -102,4 +102,26 @@ const getProjectInfo = async ({ projectId }) => {
   return project;
 };
 
-export { createProjectService, getAllProjectsServices, addUsersService, getProjectInfo };
+const deleteProjectService = async ({ projectId }) => {
+  if (!projectId) {
+    throw new Error("Project ID is required");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(projectId)) {
+    throw new Error("Project ID is invalid");
+  }
+
+  const deleteProject = await projectModel.findOneAndDelete({
+    _id: projectId,
+  });
+
+  return deleteProject;
+};
+
+export {
+  createProjectService,
+  getAllProjectsServices,
+  addUsersService,
+  getProjectInfo,
+  deleteProjectService,
+};

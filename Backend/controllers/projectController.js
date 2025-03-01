@@ -3,6 +3,7 @@ import userModel from "../models/userModel.js";
 import {
   addUsersService,
   createProjectService,
+  deleteProjectService,
   getAllProjectsServices,
   getProjectInfo,
 } from "../services/projectsService.js";
@@ -80,4 +81,24 @@ const getProjectbyId = async (req, res) => {
   }
 };
 
-export { createProject, getAllProjects, addUsersToProject, getProjectbyId };
+const deleteProject = async (req, res) => {
+  const { projectId } = req.body;
+
+  try {
+
+    const deletedProject = await deleteProjectService({ projectId });
+    return res.status(200).json({ msg: "project deleted successfully" });
+
+  } catch (err) {
+    console.log(err.message);
+
+  }
+};
+
+export {
+  createProject,
+  getAllProjects,
+  addUsersToProject,
+  getProjectbyId,
+  deleteProject,
+};
