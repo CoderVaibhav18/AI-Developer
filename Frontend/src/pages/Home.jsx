@@ -1,14 +1,14 @@
 import { useState } from "react";
 import axios from "../config/axiosInstance";
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [projectCreatePanel, setProjectCreatePanel] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [projects, setProjects] = useState([]);
-  const [deletingId, setDeletingId] = useState(null);
-  const [projectCreated, setProjectCreated] = useState(0); // New state to trigger refresh
+  // const [deletingId, setDeletingId] = useState(null);
+  const [projectCreated, setProjectCreated] = useState(0); 
 
   const navigate = useNavigate();
 
@@ -57,30 +57,30 @@ const Home = () => {
       });
   }, [token, projectCreated]); // Added projectCreated as dependency
 
-  const handleDelete = async (projectId) => {
-    if (!window.confirm("Are you sure you want to delete this project?"))
-      return;
+  // const handleDelete = async (projectId) => {
+  //   if (!window.confirm("Are you sure you want to delete this project?"))
+  //     return;
 
-    try {
-      setDeletingId(projectId);
-      await axios
-        .delete(`/project/deleteproject/${projectId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          alert("deleted " + res.data.msg);
-          setProjects((prev) => prev.filter((p) => p._id !== projectId));
-        })
-        .catch((err) => {
-          console.log(err.message);
-        });
-    } catch (error) {
-      console.error("Delete failed:", error);
-      alert("Failed to delete project");
-    } finally {
-      setDeletingId(null);
-    }
-  };
+  //   try {
+  //     setDeletingId(projectId);
+  //     await axios
+  //       .delete(`/project/deleteproject/${projectId}`, {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       })
+  //       .then((res) => {
+  //         alert("deleted " + res.data.msg);
+  //         setProjects((prev) => prev.filter((p) => p._id !== projectId));
+  //       })
+  //       .catch((err) => {
+  //         console.log(err.message);
+  //       });
+  //   } catch (error) {
+  //     console.error("Delete failed:", error);
+  //     alert("Failed to delete project");
+  //   } finally {
+  //     setDeletingId(null);
+  //   }
+  // };
 
   return (
     <main className="min-h-screen w-full max-w-7xl mx-auto p-4 overflow-hidden">
@@ -125,7 +125,7 @@ const Home = () => {
 
                   {/* Delete button */}
 
-                  <Link
+                  {/* <Link
                     className="absolute -top-3 -right-3 h-7 w-7 flex items-center 
              justify-center bg-red-500 text-white rounded-full
              hover:bg-red-600 transition-colors shadow-sm
@@ -139,7 +139,7 @@ const Home = () => {
                     ) : (
                       <i className="text-xs ri-delete-bin-7-fill"></i>
                     )}
-                  </Link>
+                  </Link> */}
                 </button>
               ))}
             </div>

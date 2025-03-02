@@ -3,15 +3,15 @@
 
 import { useEffect, useState } from "react";
 import axios from "../config/axiosInstance";
+import { useLocation } from "react-router-dom";
 
 const Project = () => {
-  // const location = useLocation();
   const [isModalPanel, setIsModalPanel] = useState(false);
-  // console.log(location.state);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [selectUserId, setSelectUserId] = useState(new Set());
-
   const [users, setUsers] = useState([]);
+
+  const location = useLocation();
 
   const handleUserClick = (id) => {
     setSelectUserId((prevSelectedUserId) => {
@@ -21,7 +21,6 @@ const Project = () => {
       } else {
         newSelectedUserId.add(id);
       }
-      console.log(Array.from(newSelectedUserId));
 
       return Array.from(newSelectedUserId);
     });
@@ -41,6 +40,27 @@ const Project = () => {
         console.log(err.message);
       });
   }, []);
+
+  const addCollaborators = () => {
+    axios
+      .put(
+        "/project/addusers",
+        {
+          projectId: location.state.project._id,
+          users: Array.from(selectUserId),
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+        setIsModalPanel(false)
+      })
+      .catch((err) => console.log(err.message));
+  };
 
   return (
     <main className="h-screen w-screen flex">
@@ -121,14 +141,17 @@ const Project = () => {
           <div className="bg-white p-4 rounded-md w-96 max-w-full relative">
             <header className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">Select User</h2>
-              <button onClick={() => setIsModalPanel(false)} className="p-2">
-                <i className="ri-close-fill"></i>
+              <button
+                onClick={() => setIsModalPanel(false)}
+                className="p-2 cursor-pointer"
+              >
+                <i className="ri-close-fill font-semibold text-lg"></i>
               </button>
             </header>
             <div className="users-list flex flex-col gap-2 mb-16 max-h-96 overflow-auto">
               {users.map((user) => (
                 <div
-                  key={user.id}
+                  key={user._id}
                   className={`user cursor-pointer hover:bg-slate-200 ${
                     Array.from(selectUserId).indexOf(user._id) != -1
                       ? "bg-slate-200"
@@ -144,8 +167,8 @@ const Project = () => {
               ))}
             </div>
             <button
-              // onClick={addCollaborators}
-              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-blue-600 text-white rounded-md"
+              onClick={addCollaborators}
+              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-blue-600 text-white cursor-pointer rounded-md"
             >
               Add Collaborators
             </button>
