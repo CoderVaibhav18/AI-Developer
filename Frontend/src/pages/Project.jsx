@@ -9,12 +9,22 @@ const Project = () => {
   const [isModalPanel, setIsModalPanel] = useState(false);
   // console.log(location.state);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
-  const [selectUserId, setSelectUserId] = useState([]);
+  const [selectUserId, setSelectUserId] = useState(new Set());
 
   const [users, setUsers] = useState([]);
 
   const handleUserClick = (id) => {
-    setSelectUserId([...selectUserId, id]);
+    setSelectUserId((prevSelectedUserId) => {
+      const newSelectedUserId = new Set(prevSelectedUserId);
+      if (newSelectedUserId.has(id)) {
+        newSelectedUserId.delete(id);
+      } else {
+        newSelectedUserId.add(id);
+      }
+      console.log(Array.from(newSelectedUserId));
+
+      return Array.from(newSelectedUserId);
+    });
   };
 
   useEffect(() => {
@@ -107,66 +117,35 @@ const Project = () => {
       </section>
 
       {isModalPanel && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white p-4 md:p-6 flex flex-col rounded-lg w-full max-w-md shadow-xl">
-            <div className="flex justify-between mb-3 items-center">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                Select users
-              </h2>
-              <button
-                onClick={() => setIsModalPanel(false)}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
-              >
-                <i className="ri-close-line text-2xl " />
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-4 rounded-md w-96 max-w-full relative">
+            <header className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Select User</h2>
+              <button onClick={() => setIsModalPanel(false)} className="p-2">
+                <i className="ri-close-fill"></i>
               </button>
-            </div>
-
-            <div className="max-h-[60vh] overflow-y-auto">
-              {" "}
-              {/* Scrollable container */}
+            </header>
+            <div className="users-list flex flex-col gap-2 mb-16 max-h-96 overflow-auto">
               {users.map((user) => (
                 <div
-                  key={user._id}
-                  onClick={() => handleUserClick(user._id)}
-                  className={`group relative transition-colors ${
-                    selectUserId.indexOf(user._id) != -1
+                  key={user.id}
+                  className={`user cursor-pointer hover:bg-slate-200 ${
+                    Array.from(selectUserId).indexOf(user._id) != -1
                       ? "bg-slate-200"
-                      : "hover:bg-slate-50"
-                  }`}
+                      : ""
+                  } p-2 flex gap-2 items-center`}
+                  onClick={() => handleUserClick(user._id)}
                 >
-                  <div className="flex items-center p-2 md:p-3 gap-3 cursor-pointer">
-                    {/* Avatar */}
-                    <div
-                      className={`flex-shrink-0 ${
-                        selectUserId.includes(user._id)
-                          ? "bg-slate-700 ring-2 ring-slate-600"
-                          : "bg-slate-600 group-hover:bg-slate-700"
-                      } w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center 
-         transition-all`}
-                    >
-                      <i className="ri-user-fill text-white text-lg md:text-xl" />
-                    </div>
-
-                    {/* User Info */}
-                    <div className="min-w-0">
-                      <h3 className="text-sm md:text-base font-semibold text-gray-900 truncate">
-                        {user.email}
-                      </h3>
-                    </div>
-
-                    {/* Selection Indicator */}
-                    {selectUserId.includes(user._id) && (
-                      <div className="ml-auto pl-3">
-                        <i className="ri-checkbox-circle-fill text-blue-600 text-xl" />
-                      </div>
-                    )}
+                  <div className="aspect-square relative rounded-full w-fit h-fit flex items-center justify-center p-5 text-white bg-slate-600">
+                    <i className="ri-user-fill absolute"></i>
                   </div>
+                  <h1 className="font-semibold text-lg">{user.email}</h1>
                 </div>
               ))}
             </div>
             <button
               // onClick={addCollaborators}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 bg-blue-600 text-white rounded-md"
             >
               Add Collaborators
             </button>
