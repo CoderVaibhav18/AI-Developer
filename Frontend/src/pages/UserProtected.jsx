@@ -18,7 +18,7 @@ const UserProtected = ({ children }) => {
 
     axios
       .get(`/user/profile`, {
-        headers: { authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
         if (response.status === 200) {

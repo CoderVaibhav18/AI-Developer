@@ -38,7 +38,6 @@ const Login = () => {
           setUser(data.user);
           localStorage.setItem("token", data.token);
           navigate("/");
-          alert("User loging Successfully: " + data.user.email);
         }
         setEmail("");
         setPassword("");

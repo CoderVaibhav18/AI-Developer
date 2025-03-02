@@ -5,6 +5,7 @@ import Register from "../pages/Register";
 import Home from "../pages/Home";
 import UserProtected from "../pages/UserProtected";
 import Project from "../pages/Project";
+// import Logout from "../pages/Logout";
 
 const AppRoutes = () => {
   return (
@@ -20,7 +21,14 @@ const AppRoutes = () => {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/project" element={<Project />} />
+        <Route
+          path="/project"
+          element={
+            <UserProtected>
+              <Project />
+            </UserProtected>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

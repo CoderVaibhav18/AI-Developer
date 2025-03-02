@@ -1,14 +1,16 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "../config/axiosInstance";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
+import { userContextData } from "../context/UserContext";
 
 const Home = () => {
   const [projectCreatePanel, setProjectCreatePanel] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [projects, setProjects] = useState([]);
   // const [deletingId, setDeletingId] = useState(null);
-  const [projectCreated, setProjectCreated] = useState(0); 
+  const [projectCreated, setProjectCreated] = useState(0);
+  const { user } = useContext(userContextData);
 
   const navigate = useNavigate();
 
@@ -85,17 +87,23 @@ const Home = () => {
   return (
     <main className="min-h-screen w-full max-w-7xl mx-auto p-4 overflow-hidden">
       <div className="p-4">
-        <button
-          onClick={() => setProjectCreatePanel(true)}
-          className="border-none font-semibold outline-none cursor-pointer 
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setProjectCreatePanel(true)}
+            className="border-none font-semibold outline-none cursor-pointer 
          text-white bg-blue-600 rounded-lg px-4 py-3
           hover:bg-blue-700 transition-colors duration-200
           text-sm md:text-base"
-        >
-          <h4 className="flex items-center justify-center gap-1">
-            <i className="text-xl ri-add-line align-middle"></i> New Project
-          </h4>
-        </button>
+          >
+            <h4 className="flex items-center justify-center gap-1">
+              <i className="text-xl ri-add-line align-middle"></i> New Project
+            </h4>
+
+          </button>
+
+          <h2 className="text-md font-medium">{user.email}</h2> 
+          
+        </div>
 
         {
           /* Project Create Panel */
