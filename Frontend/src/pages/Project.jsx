@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import axios from "../config/axiosInstance";
 import { useLocation } from "react-router-dom";
+import { initializeSocket, sendMsg, receiveMsg } from "../config/socket";
 
 const Project = () => {
   const [isModalPanel, setIsModalPanel] = useState(false);
@@ -28,6 +29,8 @@ const Project = () => {
   };
 
   useEffect(() => {
+    initializeSocket(projects._id);
+
     axios
       .get(`/project/getprojects/${location.state.project._id}`, {
         headers: {
@@ -35,6 +38,8 @@ const Project = () => {
         },
       })
       .then((res) => {
+        console.log(res.data.projects);
+
         setProjects(res.data.projects);
       });
 
@@ -50,7 +55,7 @@ const Project = () => {
       .catch((err) => {
         console.log(err.message);
       });
-  }, [location.state.project._id]);
+  }, [location.state.project._id, projects._id]);
 
   const addCollaborators = () => {
     axios
@@ -127,7 +132,6 @@ const Project = () => {
           }`}
         >
           <header className="flex justify-between items-center font-medium text-lg p-2 px-3 bg-slate-300">
-
             <h2>Collaborators</h2>
 
             <button
@@ -138,7 +142,7 @@ const Project = () => {
             </button>
           </header>
 
-          {projects.users > 0 && projects.users.map((user, idx) => (
+          {projects.users.map((user, idx) => (
             <div key={idx} className="users flex flex-col  gap-2">
               <div className="user flex items-center cursor-pointer hover:bg-slate-200 p-3  gap-2">
                 <div className="aspect-square bg-slate-600 flex items-center justify-center h-fit w-fit rounded-full p-5 text-white">
