@@ -1,17 +1,19 @@
 // import React from "react";
 // import { useLocation } from "react-router-dom";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "../config/axiosInstance";
 import { useLocation } from "react-router-dom";
 import { initializeSocket, sendMsg, receiveMsg } from "../config/socket";
+import { userContextData } from "../context/UserContext";
 
 const Project = () => {
   const [isModalPanel, setIsModalPanel] = useState(false);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [selectUserId, setSelectUserId] = useState(new Set());
   const [users, setUsers] = useState([]);
-
+  const [message, setMessage] = useState('')
+  const { user } = useContext(userContextData);
   const location = useLocation();
   const [projects, setProjects] = useState(location.state.project);
 
@@ -28,8 +30,19 @@ const Project = () => {
     });
   };
 
+  const sendMessage = () => {
+    sendMsg('project-message', {
+      message,
+      sender: user._id
+    })
+  }
+
   useEffect(() => {
     initializeSocket(projects._id);
+
+    receiveMsg('project-message', data => {
+      console.log(data);
+    })
 
     axios
       .get(`/project/getprojects/${location.state.project._id}`, {
@@ -118,9 +131,11 @@ const Project = () => {
             <input
               className="p-2 px-4 border-none outline-none flex-grow bg-amber-50"
               type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               placeholder="Enter message"
             />
-            <button className=" px-5 bg-slate-950 hover:bg-slate-800 text-white">
+            <button onClick={sendMessage} className=" px-5 bg-slate-950 hover:bg-slate-800 text-white">
               <i className="ri-send-plane-fill"></i>
             </button>
           </div>
