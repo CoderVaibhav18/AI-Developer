@@ -12,6 +12,7 @@ const Project = () => {
   const [users, setUsers] = useState([]);
 
   const location = useLocation();
+  const [projects, setProjects] = useState(location.state.project);
 
   const handleUserClick = (id) => {
     setSelectUserId((prevSelectedUserId) => {
@@ -28,6 +29,16 @@ const Project = () => {
 
   useEffect(() => {
     axios
+      .get(`/project/getprojects/${location.state.project._id}`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        setProjects(res.data.projects);
+      });
+
+    axios
       .get("/user/allusers", {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
@@ -39,7 +50,7 @@ const Project = () => {
       .catch((err) => {
         console.log(err.message);
       });
-  }, []);
+  }, [location.state.project._id]);
 
   const addCollaborators = () => {
     axios
@@ -57,7 +68,7 @@ const Project = () => {
       )
       .then((res) => {
         console.log(res.data);
-        setIsModalPanel(false)
+        setIsModalPanel(false);
       })
       .catch((err) => console.log(err.message));
   };
@@ -115,7 +126,10 @@ const Project = () => {
             isSidePanelOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <header className="flex justify-end p-2  px-3 bg-slate-300">
+          <header className="flex justify-between items-center font-medium text-lg p-2 px-3 bg-slate-300">
+
+            <h2>Collaborators</h2>
+
             <button
               className="p-2 text-xl cursor-pointer"
               onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
@@ -124,15 +138,17 @@ const Project = () => {
             </button>
           </header>
 
-          <div className="users flex flex-col  gap-2">
-            <div className="user flex items-center cursor-pointer hover:bg-slate-200 p-3  gap-2">
-              <div className="aspect-square bg-slate-600 flex items-center justify-center h-fit w-fit rounded-full p-5 text-white">
-                <i className="ri-user-fill absolute"></i>
-              </div>
+          {projects.users > 0 && projects.users.map((user, idx) => (
+            <div key={idx} className="users flex flex-col  gap-2">
+              <div className="user flex items-center cursor-pointer hover:bg-slate-200 p-3  gap-2">
+                <div className="aspect-square bg-slate-600 flex items-center justify-center h-fit w-fit rounded-full p-5 text-white">
+                  <i className="ri-user-fill absolute"></i>
+                </div>
 
-              <h1 className="text-lg font-semibold">Vaibhav Sathe</h1>
+                <h1 className="text-lg font-semibold">{user.email}</h1>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </section>
 
