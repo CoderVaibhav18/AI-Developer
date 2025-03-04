@@ -8,12 +8,15 @@ const UserProtected = ({ children }) => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const { setUser } = useContext(userContextData);
+  const { user } = useContext(userContextData);
 
   useEffect(() => {
     if (!token) {
       navigate("/login");
-      return;
+    }
+
+    if (!user) {
+      navigate("/login");
     }
 
     axios
@@ -23,8 +26,7 @@ const UserProtected = ({ children }) => {
       .then((response) => {
         if (response.status === 200) {
           const data = response.data;
-          console.log(data);
-          
+          console.log(data.user);          
           setIsLoading(false);
         }
       })
@@ -33,7 +35,7 @@ const UserProtected = ({ children }) => {
         localStorage.removeItem("token");
         navigate("/login");
       });
-  }, [token, navigate, setUser]);
+  }, [token, navigate, user]);
 
   if (isLoading) {
     return (
