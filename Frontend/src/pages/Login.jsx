@@ -12,7 +12,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { setUser } = useContext(userContextData);
+  const { user, setUser } = useContext(userContextData);
 
   const handleShowPass = () => {
     if (eyeChange) {

@@ -12,7 +12,7 @@ const Project = () => {
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [selectUserId, setSelectUserId] = useState(new Set());
   const [users, setUsers] = useState([]);
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState("");
   const { user } = useContext(userContextData);
   const location = useLocation();
   const [projects, setProjects] = useState(location.state.project);
@@ -31,33 +31,35 @@ const Project = () => {
   };
 
   const sendMessage = () => {
-    sendMsg('project-message', {
+    console.log('sending');
+    
+    console.log(user);
+
+    sendMsg("project-message", {
       message,
-      sender: user._id
-    })
-  }
+      sender: user._id,
+    });
+
+    setMessage("");
+  };
 
   useEffect(() => {
     initializeSocket(projects._id);
 
-    receiveMsg('project-message', data => {
+    receiveMsg("project-message", (data) => {
       console.log(data);
-    })
+    });
 
-    axios
-      .get(`/project/getprojects/${location.state.project._id}`, {
+    axios.get(`/project/getprojects/${location.state.project._id}`, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
       })
       .then((res) => {
-        console.log(res.data.projects);
-
         setProjects(res.data.projects);
       });
 
-    axios
-      .get("/user/allusers", {
+    axios.get("/user/allusers", {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
@@ -71,8 +73,7 @@ const Project = () => {
   }, [location.state.project._id, projects._id]);
 
   const addCollaborators = () => {
-    axios
-      .put(
+    axios.put(
         "/project/addusers",
         {
           projectId: location.state.project._id,
@@ -135,7 +136,10 @@ const Project = () => {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Enter message"
             />
-            <button onClick={sendMessage} className=" px-5 bg-slate-950 hover:bg-slate-800 text-white">
+            <button
+              onClick={sendMessage}
+              className=" px-5 bg-slate-950 hover:bg-slate-800 text-white"
+            >
               <i className="ri-send-plane-fill"></i>
             </button>
           </div>
