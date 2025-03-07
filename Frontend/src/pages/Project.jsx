@@ -1,11 +1,11 @@
 // import React from "react";
 // import { useLocation } from "react-router-dom";
 
-import { useContext, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import axios from "../config/axiosInstance";
 import { useLocation } from "react-router-dom";
 import { initializeSocket, sendMsg, receiveMsg } from "../config/socket";
-import { userContextData } from "../context/UserContext";
+// import { userContextData } from "../context/UserContext";
 
 const Project = () => {
   const [isModalPanel, setIsModalPanel] = useState(false);
@@ -13,9 +13,11 @@ const Project = () => {
   const [selectUserId, setSelectUserId] = useState(new Set());
   const [users, setUsers] = useState([]);
   const [message, setMessage] = useState("");
-  const { user } = useContext(userContextData);
+  // const { user } = useContext(userContextData);
   const location = useLocation();
   const [projects, setProjects] = useState(location.state.project);
+  const userId = localStorage.getItem('user')
+  const userObj = JSON.parse(userId)
 
   const handleUserClick = (id) => {
     setSelectUserId((prevSelectedUserId) => {
@@ -33,11 +35,11 @@ const Project = () => {
   const sendMessage = () => {
     console.log('sending');
     
-    console.log(user);
+    console.log(userObj._id);
 
     sendMsg("project-message", {
       message,
-      sender: user._id,
+      sender: userObj._id,
     });
 
     setMessage("");

@@ -36,6 +36,7 @@ const Register = () => {
     if (response.status === 201) {
       const data = response.data;
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       setUser(data.user);
       alert("user created");
       navigate("/");

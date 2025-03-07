@@ -1,8 +1,8 @@
-import { useContext, useState } from "react";
+import {  useState } from "react";
 import axios from "../config/axiosInstance";
 import { useEffect } from "react";
 import {  useNavigate } from "react-router-dom";
-import { userContextData } from "../context/UserContext";
+// import { userContextData } from "../context/UserContext";
 
 const Home = () => {
   const [projectCreatePanel, setProjectCreatePanel] = useState(false);
@@ -10,7 +10,9 @@ const Home = () => {
   const [projects, setProjects] = useState([]);
   // const [deletingId, setDeletingId] = useState(null);
   const [projectCreated, setProjectCreated] = useState(0);
-  const { user } = useContext(userContextData);
+  // const { user } = useContext(userContextData);
+  const userId = localStorage.getItem('user')
+  const userObj = JSON.parse(userId)
 
   const navigate = useNavigate();
 
@@ -101,7 +103,7 @@ const Home = () => {
 
           </button>
 
-          <h2 className="text-md font-medium">{user.email}</h2> 
+          <h2 className="text-md font-medium">{userObj.email}</h2> 
           
         </div>
 
