@@ -11,8 +11,7 @@ const Home = () => {
   // const [deletingId, setDeletingId] = useState(null);
   const [projectCreated, setProjectCreated] = useState(0);
   // const { user } = useContext(userContextData);
-  const userId = localStorage.getItem('user')
-  const userObj = JSON.parse(userId)
+  const userObj = JSON.parse(localStorage.getItem("user"));
 
   const navigate = useNavigate();
 

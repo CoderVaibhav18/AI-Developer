@@ -1,7 +1,7 @@
 // import React from "react";
 // import { useLocation } from "react-router-dom";
 
-import {  useEffect, useState } from "react";
+import { createRef, useEffect, useState } from "react";
 import axios from "../config/axiosInstance";
 import { useLocation } from "react-router-dom";
 import { initializeSocket, sendMsg, receiveMsg } from "../config/socket";
@@ -16,8 +16,8 @@ const Project = () => {
   // const { user } = useContext(userContextData);
   const location = useLocation();
   const [projects, setProjects] = useState(location.state.project);
-  const userId = localStorage.getItem('user')
-  const userObj = JSON.parse(userId)
+  const userObj = JSON.parse(localStorage.getItem("user"));
+  const messageBox = createRef();
 
   const handleUserClick = (id) => {
     setSelectUserId((prevSelectedUserId) => {
@@ -33,14 +33,11 @@ const Project = () => {
   };
 
   const sendMessage = () => {
-    console.log('sending');
-    
-    console.log(userObj._id);
-
     sendMsg("project-message", {
       message,
-      sender: userObj._id,
+      sender: userObj,
     });
+    appendOutGoingMsg(message, userObj);
 
     setMessage("");
   };
@@ -50,9 +47,11 @@ const Project = () => {
 
     receiveMsg("project-message", (data) => {
       console.log(data);
+      appendIncommingMsg(data);
     });
 
-    axios.get(`/project/getprojects/${location.state.project._id}`, {
+    axios
+      .get(`/project/getprojects/${location.state.project._id}`, {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
@@ -61,7 +60,8 @@ const Project = () => {
         setProjects(res.data.projects);
       });
 
-    axios.get("/user/allusers", {
+    axios
+      .get("/user/allusers", {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
@@ -75,7 +75,8 @@ const Project = () => {
   }, [location.state.project._id, projects._id]);
 
   const addCollaborators = () => {
-    axios.put(
+    axios
+      .put(
         "/project/addusers",
         {
           projectId: location.state.project._id,
@@ -94,10 +95,60 @@ const Project = () => {
       .catch((err) => console.log(err.message));
   };
 
+  const appendIncommingMsg = (msgObj) => {
+    const msgBox = document.querySelector(".message-box");
+
+    const msg = document.createElement("div");
+
+    msg.classList.add(
+      "max-w-56",
+      "flex",
+      "flex-col",
+      "p-2",
+      "bg-slate-50",
+      "rounded-md",
+      "w-fit"
+    );
+    msg.innerHTML = `
+      <small className="opacity-65 text-xs">${msgObj.sender.email}</small>
+      <p className="text-sm">${msgObj.message}</p>
+    `;
+    msgBox.appendChild(msg);
+    setMessage("");
+    scrollToBottom();
+  };
+
+  const appendOutGoingMsg = (msgObj, userObj) => {
+    const msgBox = document.querySelector(".message-box");
+    const msg = document.createElement("div");
+
+    msg.classList.add(
+      "max-w-56",
+      "flex",
+      "ml-auto",
+      "flex-col",
+      "p-2",
+      "bg-slate-50",
+      "rounded-md",
+      "w-fit"
+    );
+    msg.innerHTML = `
+      <small className="opacity-65 text-xs">${userObj.email}</small>
+      <p className="text-sm">${msgObj}</p>
+    `;
+    msgBox.appendChild(msg);
+    setMessage("");
+    scrollToBottom();
+  };
+
+  const scrollToBottom = () => {
+    messageBox.current.scrollTop = messageBox.current.scrollHeight;
+  };
+
   return (
     <main className="h-screen w-screen flex">
-      <section className="relative left h-full flex flex-col min-w-96 bg-slate-300">
-        <header className="w-full flex justify-between items-center p-2 px-4 max-h-96 overflow-auto bg-slate-100">
+      <section className="left relative flex flex-col h-screen min-w-96 bg-slate-300">
+        <header className="flex justify-between items-center p-2 px-4 w-full bg-slate-100 absolute z-10 top-0">
           <button
             onClick={() => setIsModalPanel(true)}
             className="cursor-pointer flex gap-1"
@@ -114,23 +165,13 @@ const Project = () => {
           </button>
         </header>
 
-        <div className="conversation-area flex flex-grow flex-col">
-          <div className="message-box p-2 flex-grow flex flex-col gap-1">
-            <div className="max-w-56 flex flex-col p-2 bg-slate-50 rounded-md w-fit ">
-              <small className="opacity-65 text-xs">example@gmail.com</small>
-              <p className="text-sm">
-                lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem
-                lorem lorem
-              </p>
-            </div>
+        <div className="conversation-area pt-14 pb-10 flex-grow flex flex-col h-full relative">
+          <div
+            ref={messageBox}
+            className="message-box p-2 flex-grow flex flex-col gap-1 overflow-auto max-h-full scrollbar-hide"
+          ></div>
 
-            <div className="max-w-56 ml-auto flex flex-col p-2 bg-slate-50 rounded-md w-fit ">
-              <small className="opacity-65 text-xs">example@gmail.com</small>
-              <p className="text-sm">lorem lorem lorem lorem lorem</p>
-            </div>
-          </div>
-
-          <div className="inputField w-full flex">
+          <div className="inputField w-full flex absolute bottom-0">
             <input
               className="p-2 px-4 border-none outline-none flex-grow bg-amber-50"
               type="text"
