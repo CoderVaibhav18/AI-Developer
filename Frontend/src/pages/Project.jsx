@@ -5,6 +5,7 @@ import axios from "../config/axiosInstance";
 import { useLocation } from "react-router-dom";
 import { initializeSocket, sendMsg, receiveMsg } from "../config/socket";
 // import { userContextData } from "../context/UserContext";
+import Markdown from "markdown-to-jsx";
 
 const Project = () => {
   const [isModalPanel, setIsModalPanel] = useState(false);
@@ -17,6 +18,7 @@ const Project = () => {
   const [projects, setProjects] = useState(location.state.project);
   const userObj = JSON.parse(localStorage.getItem("user"));
   const messageBox = createRef();
+  const [messages, setMessages] = useState([]);
 
   const handleUserClick = (id) => {
     setSelectUserId((prevSelectedUserId) => {
@@ -108,11 +110,20 @@ const Project = () => {
       "rounded-md",
       "w-fit"
     );
-    msg.innerHTML = `
+    if (msgObj.sender._id === "ai") {
+      const markDown = <Markdown>${msgObj.message}</Markdown>;
+      msg.innerHTML = `
+      <small className="opacity-65 text-xs">${msgObj.sender.email}</small>
+      <p className="text-sm">${markDown}</p>
+    `;
+    } else {
+      msg.innerHTML = `
       <small className="opacity-65 text-xs">${msgObj.sender.email}</small>
       <p className="text-sm">${msgObj.message}</p>
     `;
-    msgBox.appendChild(msg);
+      msgBox.appendChild(msg);
+    }
+
     setMessage("");
     scrollToBottom();
   };
