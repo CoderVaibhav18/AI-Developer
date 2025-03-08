@@ -5,6 +5,7 @@ import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import projectModel from "./models/projectModel.js";
+import { generateResult } from "./services/geminiService.js";
 const PORT = process.env.PORT || 7889;
 
 const server = http.createServer(app);
@@ -52,8 +53,25 @@ io.on("connection", (socket) => {
   console.log(socket.roomId);
   socket.join(socket.roomId);
 
-  socket.on("project-message", (data) => {
-    console.log(data);
+  socket.on("project-message", async (data) => {
+    const message = data.message;
+
+    const aiIsPresentInMessage = message.includes("@ai");
+
+    if (aiIsPresentInMessage) {
+      const prompt = message.replace("@ai", "");
+      const result = await generateResult(prompt);
+
+      io.to(socket.roomId).emit("project-message", {
+        message: result,
+        sender: {
+          _id: "ai",
+          email: "AI",
+        },
+      });
+
+      return;
+    }
 
     socket.broadcast.to(socket.roomId).emit("project-message", data);
   });
@@ -63,7 +81,7 @@ io.on("connection", (socket) => {
   });
   socket.on("disconnect", () => {
     console.log("a client disconnected");
-    socket.leave(socket.roomId)
+    socket.leave(socket.roomId);
   });
 });
 

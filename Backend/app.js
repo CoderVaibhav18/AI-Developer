@@ -3,6 +3,7 @@ import morgan from "morgan";
 import dbConnection from "./db/db.js";
 import userRoutes from "./routes/userRoute.js";
 import projectRoutes from "./routes/projectRoute.js";
+import aiRoutes from "./routes/geminiRoutes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 const app = express();
@@ -22,5 +23,7 @@ app.get("/", (req, res) => {
 app.use("/user", userRoutes);
 
 app.use("/project", projectRoutes);
+
+app.use('/ai', aiRoutes)
 
 export default app;
