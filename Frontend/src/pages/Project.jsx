@@ -38,9 +38,12 @@ const Project = () => {
       message,
       sender: userObj,
     });
-    appendOutGoingMsg(message, userObj);
+    // appendOutGoingMsg(message, userObj);
+
+    setMessages((prevMsg) => [...prevMsg, { sender: userObj, message }]);
 
     setMessage("");
+    scrollToBottom()
   };
 
   useEffect(() => {
@@ -48,7 +51,9 @@ const Project = () => {
 
     receiveMsg("project-message", (data) => {
       console.log(data);
-      appendIncommingMsg(data);
+      // appendIncommingMsg(data);
+      setMessages((prevMsg) => [...prevMsg, data]);
+      scrollToBottom()
     });
 
     axios
@@ -96,60 +101,60 @@ const Project = () => {
       .catch((err) => console.log(err.message));
   };
 
-  const appendIncommingMsg = (msgObj) => {
-    const msgBox = document.querySelector(".message-box");
+  // const appendIncommingMsg = (msgObj) => {
+  //   const msgBox = document.querySelector(".message-box");
 
-    const msg = document.createElement("div");
+  //   const msg = document.createElement("div");
 
-    msg.classList.add(
-      "max-w-56",
-      "flex",
-      "flex-col",
-      "p-2",
-      "bg-slate-50",
-      "rounded-md",
-      "w-fit"
-    );
-    if (msgObj.sender._id === "ai") {
-      const markDown = <Markdown>${msgObj.message}</Markdown>;
-      msg.innerHTML = `
-      <small className="opacity-65 text-xs">${msgObj.sender.email}</small>
-      <p className="text-sm">${markDown}</p>
-    `;
-    } else {
-      msg.innerHTML = `
-      <small className="opacity-65 text-xs">${msgObj.sender.email}</small>
-      <p className="text-sm">${msgObj.message}</p>
-    `;
-      msgBox.appendChild(msg);
-    }
+  //   msg.classList.add(
+  //     "max-w-56",
+  //     "flex",
+  //     "flex-col",
+  //     "p-2",
+  //     "bg-slate-50",
+  //     "rounded-md",
+  //     "w-fit"
+  //   );
+  //   if (msgObj.sender._id === "ai") {
+  //     const markDown = <Markdown>${msgObj.message}</Markdown>;
+  //     msg.innerHTML = `
+  //     <small className="opacity-65 text-xs">${msgObj.sender.email}</small>
+  //     <p className="text-sm">${markDown}</p>
+  //   `;
+  //     // msgBox.appendChild(msg);
+  //   } else {
+  //     msg.innerHTML = `
+  //     <small className="opacity-65 text-xs">${msgObj.sender.email}</small>
+  //     <p className="text-sm">${msgObj.message}</p>
+  //   `;
+  //     msgBox.appendChild(msg);
+  //   }
 
-    setMessage("");
-    scrollToBottom();
-  };
+  //   setMessage("");
+  //   scrollToBottom();
+  // };
 
-  const appendOutGoingMsg = (msgObj, userObj) => {
-    const msgBox = document.querySelector(".message-box");
-    const msg = document.createElement("div");
+  // const appendOutGoingMsg = (message, userObj) => {
+  //   const msgBox = document.querySelector(".message-box");
+  //   const msg = document.createElement("div");
 
-    msg.classList.add(
-      "max-w-56",
-      "flex",
-      "ml-auto",
-      "flex-col",
-      "p-2",
-      "bg-slate-50",
-      "rounded-md",
-      "w-fit"
-    );
-    msg.innerHTML = `
-      <small className="opacity-65 text-xs">${userObj.email}</small>
-      <p className="text-sm">${msgObj}</p>
-    `;
-    msgBox.appendChild(msg);
-    setMessage("");
-    scrollToBottom();
-  };
+  //   msg.classList.add(
+  //     "max-w-56",
+  //     "flex",
+  //     "ml-auto",
+  //     "flex-col",
+  //     "p-2",
+  //     "bg-slate-50",
+  //     "rounded-md",
+  //     "w-fit"
+  //   );
+  //   msg.innerHTML = `
+  //     <small className="opacity-65 text-xs">${userObj.email}</small>
+  //     <p className="text-sm">${message}</p>
+  //   `;
+  //   msgBox.appendChild(msg);
+  //   scrollToBottom();
+  // };
 
   const scrollToBottom = () => {
     messageBox.current.scrollTop = messageBox.current.scrollHeight;
@@ -179,7 +184,25 @@ const Project = () => {
           <div
             ref={messageBox}
             className="message-box p-2 flex-grow flex flex-col gap-1 overflow-auto max-h-full scrollbar-hide"
-          ></div>
+          >
+            {messages.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`${
+                  msg.sender._id === "ai" ? "" : "ml-auto"
+                } message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}
+              >
+                <small className="opacity-65 text-xs">{msg.sender.email}</small>
+                <p className="text-sm">
+                  {msg.sender._id === "ai" ? (
+                    <Markdown>{msg.message}</Markdown>
+                  ) : (
+                    msg.message
+                  )}
+                </p>
+              </div>
+            ))}
+          </div>
 
           <div className="inputField w-full flex absolute bottom-0">
             <input
