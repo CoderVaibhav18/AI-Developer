@@ -32,17 +32,9 @@ const Project = () => {
   const userObj = JSON.parse(localStorage.getItem("user"));
   const messageBox = createRef();
   const [messages, setMessages] = useState([]);
-  const [fileTree, setFileTree] = useState({
-    "app.js": {
-      content: `const express = require("express")`,
-    },
-    "package.json": {
-      content: `{
-        "name": "temp-server",
-      }`,
-    },
-  });
+  const [fileTree, setFileTree] = useState({});
   const [currentFile, setCurrentFile] = useState(null);
+  const [openFiles, setOpenFiles] = useState([]);
 
   const handleUserClick = (id) => {
     setSelectUserId((prevSelectedUserId) => {
@@ -92,8 +84,14 @@ const Project = () => {
     initializeSocket(projects._id);
 
     receiveMsg("project-message", (data) => {
-      console.log(data);
+      // console.log(JSON.parse(data.message));
       // appendIncommingMsg(data);
+      const message = JSON.parse(data.message);
+
+      if (message.fileTree) {
+        setFileTree(message.fileTree);
+      }
+
       setMessages((prevMsg) => [...prevMsg, data]);
       scrollToBottom();
     });
@@ -295,12 +293,15 @@ const Project = () => {
         </div>
       </section>
 
-      <section className="right bg-red-400 flex h-full flex-grow">
+      <section className="right bg-slate-100 flex h-full flex-grow">
         <div className="explorer h-full max-w-64 min-w-52 bg-slate-200 ">
           <div className="filetree w-full flex flex-col gap-2">
             {Object.keys(fileTree).map((file, index) => (
               <button
-                onClick={() => setCurrentFile(file)}
+                onClick={() => {
+                  setCurrentFile(file);
+                  setOpenFiles([...new Set([...openFiles, file])]);
+                }}
                 key={index}
                 className="tree-element cursor-pointer p-2 px-4 flex items-center gap-2 w-full bg-slate-300"
               >
@@ -311,23 +312,55 @@ const Project = () => {
         </div>
 
         {currentFile && (
-          <div className="code-editor">
+          <div className="code-editor flex flex-grow h-full flex-col">
             <div className="top">
-              <h1 className="text-lg font-semibold">{currentFile}</h1>
+              {openFiles.map((file, index) => (
+                <button
+                  key={index}
+                  className={`open-file cursor-pointer p-2 px-4 items-center gap-2 bg-slate-300 ${
+                    currentFile === file ? "bg-slate-400" : ""
+                  }`}
+                  onClick={() => setCurrentFile(file)}
+                >
+                  <p className="font-semibold text-lg">{file}</p>
+                </button>
+              ))}
             </div>
-            <div className="bottom">
+            <div className="bottom flex flex-grow">
               {fileTree[currentFile] && (
-                <textarea
-                  value={fileTree[currentFile].content}
-                  onChange={(e) => {
-                    setFileTree({
-                      ...fileTree,
-                      [currentFile]: {
-                        content: e.target.value,
-                      },
-                    });
-                  }}
-                />
+                <div className="code-editor-area h-full overflow-auto flex-grow p-2 bg-slate-50">
+                  <pre className="hljs h-full">
+                    <code
+                      className="hljs h-full outline-none"
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const updatedContent = e.target.innerText;
+                        const ft = {
+                          ...fileTree,
+                          [currentFile]: {
+                            file: {
+                              contents: updatedContent,
+                            },
+                          },
+                        };
+                        setFileTree(ft);
+                      }}
+                      dangerouslySetInnerHTML={{
+                        __html: hljs.highlight(
+                          "javascript",
+                          fileTree[currentFile].file.contents
+                        ).value,
+                      }}
+                      style={{
+                        whiteSpace: "pre-wrap",
+                        paddingTop: "4rem",
+                        paddingBottom: "25rem",
+                        counterSet: "line-numbering",
+                      }}
+                    />
+                  </pre>
+                </div>
               )}
             </div>
           </div>
