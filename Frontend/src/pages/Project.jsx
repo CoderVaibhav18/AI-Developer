@@ -1,11 +1,24 @@
-// import React from "react";
-// import { useLocation } from "react-router-dom";
-import { createRef, useEffect, useState } from "react";
+import { createRef, useEffect, useRef, useState } from "react";
 import axios from "../config/axiosInstance";
 import { useLocation } from "react-router-dom";
 import { initializeSocket, sendMsg, receiveMsg } from "../config/socket";
-// import { userContextData } from "../context/UserContext";
 import Markdown from "markdown-to-jsx";
+import hljs from "highlight.js";
+
+function SyntaxHighlightedCode(props) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (ref.current && props.className?.includes("lang-") && window.hljs) {
+      window.hljs.highlightElement(ref.current);
+
+      // hljs won't reprocess the element unless this attribute is removed
+      ref.current.removeAttribute("data-highlighted");
+    }
+  }, [props.className, props.children]);
+
+  return <code {...props} ref={ref} />;
+}
 
 const Project = () => {
   const [isModalPanel, setIsModalPanel] = useState(false);
@@ -43,8 +56,27 @@ const Project = () => {
     setMessages((prevMsg) => [...prevMsg, { sender: userObj, message }]);
 
     setMessage("");
-    scrollToBottom()
+    scrollToBottom();
   };
+
+  function WriteAiMessage(message) {
+    // console.log(message);
+
+    // const messageObject = JSON.parse(message);
+
+    return (
+      <div className="overflow-auto bg-slate-950 text-white rounded-sm p-3 pr-3">
+        <Markdown
+          children={message}
+          options={{
+            overrides: {
+              code: SyntaxHighlightedCode,
+            },
+          }}
+        />
+      </div>
+    );
+  }
 
   useEffect(() => {
     initializeSocket(projects._id);
@@ -53,7 +85,7 @@ const Project = () => {
       console.log(data);
       // appendIncommingMsg(data);
       setMessages((prevMsg) => [...prevMsg, data]);
-      scrollToBottom()
+      scrollToBottom();
     });
 
     axios
@@ -185,21 +217,23 @@ const Project = () => {
             ref={messageBox}
             className="message-box p-2 flex-grow flex flex-col gap-1 overflow-auto max-h-full scrollbar-hide"
           >
-            {messages.map((msg, idx) => (
+            {messages.map((msg, index) => (
               <div
-                key={idx}
+                key={index}
                 className={`${
-                  msg.sender._id === "ai" ? "" : "ml-auto"
-                } message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}
+                  msg.sender._id === "ai" ? "max-w-80" : "max-w-52"
+                } ${
+                  msg.sender._id == userObj._id && "ml-auto"
+                }  message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}
               >
                 <small className="opacity-65 text-xs">{msg.sender.email}</small>
-                <p className="text-sm">
+                <div className="text-sm">
                   {msg.sender._id === "ai" ? (
-                    <Markdown>{msg.message}</Markdown>
+                    WriteAiMessage(msg.message)
                   ) : (
-                    msg.message
+                    <p>{msg.message}</p>
                   )}
-                </p>
+                </div>
               </div>
             ))}
           </div>

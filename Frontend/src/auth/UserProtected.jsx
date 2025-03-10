@@ -26,7 +26,7 @@ const UserProtected = ({ children }) => {
       .then((response) => {
         if (response.status === 200) {
           const data = response.data;
-          console.log(data.user);          
+
           setIsLoading(false);
         }
       })
