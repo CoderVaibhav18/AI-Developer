@@ -32,6 +32,17 @@ const Project = () => {
   const userObj = JSON.parse(localStorage.getItem("user"));
   const messageBox = createRef();
   const [messages, setMessages] = useState([]);
+  const [fileTree, setFileTree] = useState({
+    "app.js": {
+      content: `const express = require("express")`,
+    },
+    "package.json": {
+      content: `{
+        "name": "temp-server",
+      }`,
+    },
+  });
+  const [currentFile, setCurrentFile] = useState(null);
 
   const handleUserClick = (id) => {
     setSelectUserId((prevSelectedUserId) => {
@@ -60,14 +71,13 @@ const Project = () => {
   };
 
   function WriteAiMessage(message) {
-    // console.log(message);
-
-    // const messageObject = JSON.parse(message);
+    const messageObject = JSON.parse(message);
+    console.log(messageObject);
 
     return (
       <div className="overflow-auto bg-slate-950 text-white rounded-sm p-3 pr-3">
         <Markdown
-          children={message}
+          children={messageObject.text}
           options={{
             overrides: {
               code: SyntaxHighlightedCode,
@@ -283,6 +293,45 @@ const Project = () => {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="right bg-red-400 flex h-full flex-grow">
+        <div className="explorer h-full max-w-64 min-w-52 bg-slate-200 ">
+          <div className="filetree w-full flex flex-col gap-2">
+            {Object.keys(fileTree).map((file, index) => (
+              <button
+                onClick={() => setCurrentFile(file)}
+                key={index}
+                className="tree-element cursor-pointer p-2 px-4 flex items-center gap-2 w-full bg-slate-300"
+              >
+                <p className=" font-semibold text-lg">{file}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {currentFile && (
+          <div className="code-editor">
+            <div className="top">
+              <h1 className="text-lg font-semibold">{currentFile}</h1>
+            </div>
+            <div className="bottom">
+              {fileTree[currentFile] && (
+                <textarea
+                  value={fileTree[currentFile].content}
+                  onChange={(e) => {
+                    setFileTree({
+                      ...fileTree,
+                      [currentFile]: {
+                        content: e.target.value,
+                      },
+                    });
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        )}
       </section>
 
       {isModalPanel && (
