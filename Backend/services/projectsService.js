@@ -24,6 +24,7 @@ const getAllProjectsServices = async ({ userId }) => {
   if (!userId) {
     throw new Error("User ID is required");
   }
+  console.log(userId);
 
   const allProjects = await projectModel.find({ users: userId });
   return allProjects;
